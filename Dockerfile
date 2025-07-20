@@ -14,10 +14,10 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy all source files
+# Copy the rest of the project
 COPY . .
 
-# Expose port
+# Expose port (Render ignores this, optional)
 EXPOSE 8080
 
 # Run the FastAPI app
