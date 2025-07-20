@@ -13,7 +13,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*"],  # Change this in production
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -44,7 +44,6 @@ def process_image(image_bytes: bytes) -> bytes:
     cleaned_buffer = io.BytesIO()
     final_img.save(cleaned_buffer, format="PNG")
     cleaned_buffer.seek(0)
-
     return cleaned_buffer.read()
 
 @app.get("/")
@@ -54,7 +53,7 @@ def health():
 @app.post("/remove-background")
 async def remove_background(file: UploadFile = File(...)):
     if not file.content_type.startswith("image/"):
-        return JSONResponse(status_code=400, content={"error": "Please upload a valid image file."})
+        return JSONResponse(status_code=400, content={"error": "Please upload a valid image."})
 
     try:
         image_bytes = await file.read()
@@ -66,11 +65,10 @@ async def remove_background(file: UploadFile = File(...)):
             media_type="image/png",
             headers={"Content-Disposition": "inline; filename=removed-bg.png"}
         )
-
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": f"Processing failed: {str(e)}"})
 
-# Required for Render
+# Optional if running locally
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="0.0.0.0", port=10000)
+    uvicorn.run("main:app", host="0.0.0.0", port=8080)
